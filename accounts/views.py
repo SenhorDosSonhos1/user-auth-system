@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 # Create your views here.
 
@@ -31,3 +31,22 @@ def register(request):
         {'name': username,
          'email': email,
          })
+
+def user_login(request):
+    if request.method == "GET":
+        return render(request, 'accounts/login.html')
+    
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+
+    if not username or not password:
+        return HttpResponse("Preencha todos os campos!!")
+    
+    user = authenticate(username = username, password = password)
+
+    if user is not None:
+        login(request, user)
+        return HttpResponse("Vocé está logado!!")
+
+    else:
+        return HttpResponse("Credenciais inválidas!!")
