@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 # Create your views here.
 
@@ -27,10 +27,7 @@ def register(request):
                                password = password
                                )
   
-    return JsonResponse(
-        {'name': username,
-         'email': email,
-         })
+    return redirect("login")
 
 def user_login(request):
     if request.method == "GET":
@@ -50,3 +47,10 @@ def user_login(request):
 
     else:
         return HttpResponse("Credenciais inválidas!!")
+    
+def user_logout(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect("register")
+    
+    return redirect("login")
