@@ -3,9 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    
     if request.method == "GET":
         return render(request, 'accounts/register.html')
     
@@ -35,6 +39,9 @@ def register(request):
     return redirect("login")
 
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     if request.method == "GET":
         return render(request, 'accounts/login.html')
     
@@ -50,7 +57,7 @@ def user_login(request):
     if user is not None:
         login(request, user)
         #RETORNAR PRA UMA AREA RESTRITA COM O LOGIN REQUIRED
-        return HttpResponse("Vocé está logado!!")
+        return redirect("dashboard")
 
     else:
         messages.error(request, 'Credenciais inválidas!!')
@@ -62,3 +69,8 @@ def user_logout(request):
         return redirect("register")
     
     return redirect("login")
+
+@login_required(login_url = 'login')
+def dashboard(request):
+    if request.method == "GET":
+        return render(request, 'accounts/dashboard.html')
