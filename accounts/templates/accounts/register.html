@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static  %}
 
 {% block title %}
     Cadastre-se
@@ -11,6 +12,15 @@
 
             <div class="card shadow">
                 <div class="card-body">
+                    
+                    <!--Message tags-->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{message.tags}}" role="alert">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
 
                     <h3 class="text-center mb-4">Create Account</h3>
 

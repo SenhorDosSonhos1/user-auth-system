@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
+from django.contrib import messages
 # Create your views here.
 
 def register(request):
@@ -13,20 +14,24 @@ def register(request):
     password = request.POST.get('password')
     confirm_password = request.POST.get('confirm_password')
 
-    if not username or not email or not password:
-        return HttpResponse("Preencha todos os campos!!")
+    if not username.strip() or not email.strip() or not password:
+        messages.error(request, 'Preencha todos os campos!!')
+        return redirect("register")
 
     if password != confirm_password:
-        return HttpResponse("Senhas diferentes!")
+        messages.error(request, 'As senhas não coincidem!!')
+        return redirect("register")
     
     if User.objects.filter(username = username).exists():
-        return HttpResponse("Usuario já existe!!")
+        messages.error(request, 'Nome de usúario já existente!!')
+        return redirect("register")
     
     user = User.objects.create_user(username = username,
                                email = email,
                                password = password
-                               )
-  
+)
+    
+    messages.success(request, "Usuario cadastrado com sucesso!!")
     return redirect("login")
 
 def user_login(request):
@@ -37,16 +42,19 @@ def user_login(request):
     password = request.POST.get("password")
 
     if not username or not password:
-        return HttpResponse("Preencha todos os campos!!")
+        messages.error(request, 'Preencha todos os campos!!')
+        return redirect("login")
     
-    user = authenticate(username = username, password = password)
+    user = authenticate(request, username = username, password = password)
 
     if user is not None:
         login(request, user)
+        #RETORNAR PRA UMA AREA RESTRITA COM O LOGIN REQUIRED
         return HttpResponse("Vocé está logado!!")
 
     else:
-        return HttpResponse("Credenciais inválidas!!")
+        messages.error(request, 'Credenciais inválidas!!')
+        return redirect("login")
     
 def user_logout(request):
     if request.method == "POST":

@@ -11,6 +11,17 @@
 
             <div class="card shadow">
                 <div class="card-body">
+                
+                    <!--Message tags-->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{message.tags}}" role="alert">
+                                    {{message}}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                    {% endif %}
+
 
                     <h3 class="text-center mb-4">Login</h3>
 
